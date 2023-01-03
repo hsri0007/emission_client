@@ -15,18 +15,21 @@ import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
 import MenuIcon from "@material-ui/icons/Menu";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
+// import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
+// import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import InboxIcon from "@material-ui/icons/MoveToInbox";
 import MailIcon from "@material-ui/icons/Mail";
-import { Grid } from "@material-ui/core";
+import { Collapse, Grid } from "@material-ui/core";
 import EmisionsComponent from "./collects/environment/emisions/emisionsComponent";
 import CustomBreadCrumb from "../custom-components/breadcrumbs/breadcrumbs";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
+import ExpandLess from "@material-ui/icons/ExpandLess";
+import ExpandMore from "@material-ui/icons/ExpandMore";
+import StarBorder from "@material-ui/icons/StarBorder";
 
 const drawerWidth = 240;
 
@@ -35,6 +38,7 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {
       display: "flex",
     },
+    icon_styles: { color: "white", fontSize: "16px" },
     appBar: {
       zIndex: theme.zIndex.drawer + 1,
       background: "white",
@@ -82,6 +86,12 @@ const useStyles = makeStyles((theme: Theme) =>
         width: theme.spacing(9) + 1,
       },
     },
+    list_title_styles: {
+      whiteSpace: "pre-wrap",
+      color: "white",
+      fontWeight: 300,
+      fontSize: "14px",
+    },
     toolbar: {
       display: "flex",
       alignItems: "center",
@@ -95,19 +105,33 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: theme.spacing(3),
     },
     sidebar_title: {
-      fontSize: "16px",
+      fontSize: "20px",
       marginBottom: "8px",
-      color:"white",
-      fontWeight:300
+      color: "white",
+      fontWeight: 300,
     },
-    main_styles:{ width: "100%" }
+    main_styles: { width: "100%" },
+    nested: {
+      paddingLeft: theme.spacing(4),
+    },
+    sidebar_styles: {
+      paddingTop: "40px",
+      padding: "40px 20px",
+      background: "#0cbdf3",
+      height: "100%",
+    },
   })
 );
 
-const DefaultDashboard:React.FC=()=> {
+const DefaultDashboard: React.FC = () => {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(true);
+  const [listOpen, setListOpen] = React.useState(true);
+
+  const handleClick = () => {
+    setListOpen(!listOpen);
+  };
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -139,11 +163,21 @@ const DefaultDashboard:React.FC=()=> {
             <MenuIcon />
           </IconButton>
           <CustomBreadCrumb />
-          <div style={{marginLeft:"auto"}}>
-         <div style={{display:"flex"}}>
-         <Button variant="contained" style={{   background: "#007eef",color:"white",marginRight:"20px",borderRadius:"6px"}} >Subscribe</Button>
-          <Avatar >OP</Avatar>
-         </div>
+          <div style={{ marginLeft: "auto" }}>
+            <div style={{ display: "flex" }}>
+              <Button
+                variant="contained"
+                style={{
+                  background: "#007eef",
+                  color: "white",
+                  marginRight: "20px",
+                  borderRadius: "6px",
+                }}
+              >
+                Subscribe
+              </Button>
+              <Avatar>OP</Avatar>
+            </div>
           </div>
         </Toolbar>
       </AppBar>
@@ -174,48 +208,108 @@ const DefaultDashboard:React.FC=()=> {
           </IconButton> */}
           <img height="50px" width="150px" src="/main_logo.png" />
         </div>
-        <div style={{ paddingTop: "40px", padding: "40px 20px",background:'#0cbdf3',height:"91vh" }}>
-          <Typography className={classes.sidebar_title} variant="h1">
+        <div className={classes.sidebar_styles}>
+          <Typography className={classes.sidebar_title} variant="h2">
             Section 1
           </Typography>
-          <Divider style={{background:"white"}} />
+          <Divider style={{ background: "white" }} />
           <List>
             {["Sustainext HQ", `Materiality Dashboard`].map((text, index) => (
               <ListItem button key={text}>
                 <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon style={{color:"white"}} /> : <MailIcon style={{color:"white"}}  />}
+                  {index % 2 === 0 ? (
+                    <InboxIcon className={classes.icon_styles} />
+                  ) : (
+                    <MailIcon className={classes.icon_styles} />
+                  )}
                 </ListItemIcon>
-                <Typography style={{ whiteSpace: "pre-wrap",color:"white", fontWeight:300 }}>
+                <Typography className={classes.list_title_styles}>
+                  {text}
+                </Typography>
+              </ListItem>
+            ))}
+          </List>
+          <Typography className={classes.sidebar_title} variant="h2">
+            Section 2
+          </Typography>
+          <Divider style={{ background: "white" }} />
+          <List>
+            <ListItem button onClick={handleClick}>
+              <ListItemIcon>
+                <InboxIcon className={classes.icon_styles} />
+              </ListItemIcon>
+              <Typography
+                style={{ marginRight: "50px" }}
+                className={classes.list_title_styles}
+              >
+                {"Collect"}
+              </Typography>
+              {listOpen ? (
+                <ExpandLess style={{ color: "white" }} />
+              ) : (
+                <ExpandMore style={{ color: "white" }} />
+              )}
+            </ListItem>
+            <Collapse in={listOpen} timeout="auto" unmountOnExit>
+              <List component="div" disablePadding>
+                <ListItem button className={classes.nested}>
+                  <ListItemIcon>
+                    <StarBorder style={{ color: "white", fontSize: "14px" }} />
+                  </ListItemIcon>
+                  <Typography className={classes.list_title_styles}>
+                    {"Environment"}
+                  </Typography>
+                </ListItem>
+                <ListItem button className={classes.nested}>
+                  <ListItemIcon>
+                    <StarBorder style={{ color: "white", fontSize: "14px" }} />
+                  </ListItemIcon>
+                  <Typography className={classes.list_title_styles}>
+                    {"Governance"}
+                  </Typography>
+                </ListItem>
+                <ListItem button className={classes.nested}>
+                  <ListItemIcon>
+                    <StarBorder style={{ color: "white", fontSize: "14px" }} />
+                  </ListItemIcon>
+                  <Typography className={classes.list_title_styles}>
+                    {"Social"}
+                  </Typography>
+                </ListItem>
+              </List>
+            </Collapse>
+            {["Analyze", "Reports", "Optimize", "Track"].map((text, index) => (
+              <ListItem button key={text}>
+                <ListItemIcon>
+                  {index % 2 === 0 ? (
+                    <InboxIcon className={classes.icon_styles} />
+                  ) : (
+                    <MailIcon style={{ color: "white", fontSize: "14px" }} />
+                  )}
+                </ListItemIcon>
+                <Typography className={classes.list_title_styles}>
                   {text}
                 </Typography>
               </ListItem>
             ))}
           </List>
           <Typography className={classes.sidebar_title} variant="h1">
-            Section 2
-          </Typography>
-          <Divider style={{background:"white"}} />
-          <List>
-            {["Analyze", "Reports", "Optimize", "Track"].map((text, index) => (
-              <ListItem button key={text}>
-                <ListItemIcon >
-                  {index % 2 === 0 ? <InboxIcon style={{color:"white"}} /> : <MailIcon style={{color:"white"}}  />}
-                </ListItemIcon>
-                <ListItemText  style={{ whiteSpace: "pre-wrap",color:"white", fontWeight:300 }} primary={text} />
-              </ListItem>
-            ))}
-          </List>
-          <Typography className={classes.sidebar_title} variant="h1">
             Section 3
           </Typography>
-          <Divider style={{background:"white"}} />
+          <Divider style={{ background: "white" }} />
           <List>
             {["General"].map((text, index) => (
               <ListItem button key={text}>
                 <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon style={{color:"white"}} /> : <MailIcon style={{color:"white"}}  />}
+                  {index % 2 === 0 ? (
+                    <InboxIcon className={classes.icon_styles} />
+                  ) : (
+                    <MailIcon style={{ color: "white" }} />
+                  )}
                 </ListItemIcon>
-                <ListItemText style={{ whiteSpace: "pre-wrap",color:"white", fontWeight:300 }} primary={text} />
+                <Typography className={classes.list_title_styles}>
+                  {text}
+                </Typography>
               </ListItem>
             ))}
           </List>
@@ -227,6 +321,6 @@ const DefaultDashboard:React.FC=()=> {
       </main>
     </div>
   );
-}
+};
 
 export default DefaultDashboard;
